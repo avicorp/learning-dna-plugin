@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreCommit": [
+      {
+        "matcher": "knowledge/**",
+        "hooks": [
+          {
+            "type": "skill",
+            "description": "3-iteration review loop for knowledge/ changes — validates quality before commits",
+            "instructions": "## Pre-Commit Review Hook\n\n### Trigger\nPre-commit hook that activates when files in `knowledge/` are staged for commit. Non-knowledge commits pass through normally.\n\n### 3-Iteration Review Loop\n\n#### Iteration 1: Initial Review\n1. Dispatch `content-reviewer` agent to scan all staged `knowledge/` files\n2. Checks: markdown structure, references section, content depth vs DNA, mermaid syntax, orphaned subtopics\n3. Auto-fix what's possible (missing separators, missing language tags)\n4. Stage any auto-fixes\n5. Report issues that need manual review\n\n#### Iteration 2: Build + Secondary Review\n1. Run `/learning-dna:build-app` to regenerate learning-app data\n2. Dispatch `content-reviewer` agent again\n3. Dispatch `quiz-improver` agent to review any staged quiz files\n4. Auto-fix remaining auto-fixable issues\n5. Stage any new fixes\n\n#### Iteration 3: Final Pass\n1. Dispatch `content-reviewer` agent for final review\n2. If issues remain: WARN but allow commit\n3. If clean: commit proceeds without warnings\n\n### Exit Behavior\nAfter 3 iterations, remaining issues are logged as warnings but the commit is allowed to proceed."
+          }
+        ]
+      }
+    ]
+  }
+}
