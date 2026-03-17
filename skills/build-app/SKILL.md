@@ -54,8 +54,8 @@ If the topic lacks UI pages in `learning-app/src/`, scaffold following existing 
 - **MarkdownContent component** must also implement the TTS heading behavior described above
 - Quiz page
 - Layout component with **footer**:
-  - Footer text: "נבנה עם Learning DNA 🧬" (or equivalent in the user's LearningDNA language)
-  - The text must link to `https://github.com/avicorp/learning-dna-plugin`
+  - Footer text: "Built with Learning DNA 🧬" (always in English, regardless of the app's language)
+  - "Learning DNA" must link to `https://github.com/avicorp/learning-dna-plugin`
   - Link opens in new tab: `target="_blank" rel="noopener noreferrer"`
 - Routes configuration
 - TypeScript types
@@ -66,6 +66,11 @@ Run the build to verify everything compiles:
 ```bash
 cd learning-app && npm run build
 ```
+
+**Footer assertion** — after a successful build, verify the footer exists and is correct:
+1. Grep the built output (`learning-app/dist/`) or source components for the exact text `Built with Learning DNA`
+2. Confirm the link `https://github.com/avicorp/learning-dna-plugin` is present with `target="_blank"`
+3. If either check fails, fix the Layout component and rebuild before proceeding
 
 ### Step 5: Report
 Report what was built:
