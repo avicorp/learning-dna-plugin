@@ -5,8 +5,5 @@
   "author": {
     "name": "Avi Levy"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/avilevy/learning-dna-plugin"
-  }
+  "repository": "https://github.com/avicorp/learning-dna-plugin"
 }

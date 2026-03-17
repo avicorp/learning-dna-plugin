@@ -12,5 +12,8 @@ Thumbs.db
 # Claude Code local settings
 .claude/settings.local.json
 
+# Local testing
+playground/
+
 # Node (for projects using the plugin)
 node_modules/
