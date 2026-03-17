@@ -52,7 +52,12 @@ Check against DNA Knowledge Level:
 - Questions should cover material from all source files, not cluster on one subtopic
 - Flag if any source file has zero corresponding questions
 
-### 6. Schema Compliance
+### 6. Answer Position Distribution
+- Correct answers should be roughly evenly distributed across positions 0–3
+- Flag if any single position holds more than 40% of correct answers
+- If clustering is found, shuffle the correct answer positions to achieve better distribution
+
+### 7. Schema Compliance
 Validate each question matches the schema:
 ```json
 {

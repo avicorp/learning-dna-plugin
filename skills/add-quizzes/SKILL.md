@@ -65,16 +65,24 @@ Example: `/learning-dna:add-quizzes kubernetes`
 }
 ```
 
-### Step 4: Present for Review
+### Step 4: Randomize Correct Answer Position
+For each generated question:
+1. Generate a random index (0–3) for the correct answer position
+2. If the random index differs from the current `correctIndex`, swap the option at the random index with the option at the current `correctIndex`
+3. Update `correctIndex` to the new random index
+
+This ensures the correct answer is evenly distributed across all four positions rather than clustering in one spot.
+
+### Step 5: Present for Review
 - Show generated questions to the user grouped by difficulty
 - Wait for user approval or modification requests
 
-### Step 5: Write Output
+### Step 6: Write Output
 - Write to `knowledge/{topic}/quizzes/quiz-bank.json`
 - If the file already has questions, merge new questions (avoid duplicates by checking question text similarity)
 
-### Step 6: Dispatch Agent
+### Step 7: Dispatch Agent
 - Dispatch the `quiz-improver` agent to review and enhance question quality
 
-### Step 7: Report
+### Step 8: Report
 - Report counts by difficulty: "Generated X questions: Y easy, Z medium, W hard"

@@ -22,23 +22,24 @@ This is the main entry point. It runs the **full pipeline** end-to-end and finis
 1. Check if `knowledge/LearningDNA.md` exists
 2. If missing → **STOP. Do not proceed.** Run the DNA Creation Flow first:
    a. Inform the user: "Before we create any topic, you need to set up your Learning DNA — this is your personal learner profile that shapes all content generated for you. There are no defaults — your answers drive everything."
-   b. Ask 8 questions one at a time using AskUserQuestion with multiple-choice options. **Do not skip any question. Do not use defaults. The user must answer each one:**
-      - **Language:** English / Spanish / Hebrew / Chinese / Arabic / Other (specify)
-      - **Learner Type:** Kids (6-12) / Youth (13-22) / Professional (23-60) / Lifelong (60+)
-      - **Content Depth:** Brief / Standard / Detailed / Comprehensive
-      - **Example Style:** Minimal / Code-focused / Real-world scenarios / Mixed
-      - **Visualization:** Low / Medium / High
-      - **Testing Frequency:** Light (3-5 per topic) / Standard (5-10) / Heavy (10-20)
-      - **Knowledge Level:** Beginner / Some exposure / Working knowledge / Expert refresher
-      - **Learning Goal:** Quick refresher / Practical skills / Deep understanding / Interview prep
-   c. Write the user's responses to `knowledge/LearningDNA.md`
-   d. Confirm: "Your Learning DNA is set!"
+   b. Present all 8 questions in a **single message** as a numbered list with multiple-choice options. **Do not split across multiple interactions. Do not skip any question. Do not use defaults. The user must answer each one:**
+      1. **Language:** English / Spanish / Hebrew / Chinese / Arabic / Other (specify)
+      2. **Learner Type:** Kids (6-12) / Youth (13-22) / Professional (23-60) / Lifelong (60+)
+      3. **Content Depth:** Brief / Standard / Detailed / Comprehensive
+      4. **Example Style:** Minimal / Code-focused / Real-world scenarios / Mixed
+      5. **Visualization:** Low / Medium / High
+      6. **Testing Frequency:** Light (3-5 per topic) / Standard (5-10) / Heavy (10-20)
+      7. **Knowledge Level:** Beginner / Some exposure / Working knowledge / Expert refresher
+      8. **Learning Goal:** Quick refresher / Practical skills / Deep understanding / Interview prep
+   c. Wait for the user to reply with all their answers in a single response
+   d. Parse the user's answers and write the results to `knowledge/LearningDNA.md`
+   e. Confirm: "Your Learning DNA is set!"
 3. If `knowledge/LearningDNA.md` exists → proceed to Step 2
 
 ### Step 2: Per-Topic DNA Override
 1. Ask the user: "Would you like to adjust your Learning DNA for {topic}? Your defaults are: [show current global values]"
-2. If yes: ask the same 8 questions, but each shows the global default as the first option labeled "(Current default)"
-3. If the user changes any answers: write `knowledge/{topic}/LearningDNA.md` with the full profile including changes
+2. If yes: present all 8 questions in a **single message**, each showing the global default as the first option labeled "(Current default)". Wait for the user to reply with all answers at once.
+3. Parse the user's answers. If any differ from defaults: write `knowledge/{topic}/LearningDNA.md` with the full profile including changes
 4. If no changes: no per-topic file is created, global defaults apply
 
 ### Step 3: Create Directory Structure
