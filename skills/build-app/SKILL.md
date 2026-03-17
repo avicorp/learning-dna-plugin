@@ -37,9 +37,26 @@ If the learning app does not exist yet, scaffold it:
 
 If the topic lacks UI pages in `learning-app/src/`, scaffold following existing patterns:
 - Topic home page
-- Topic detail page
+- Topic detail page with **TTS (Text-to-Speech) support**:
+  - Each heading (h1, h2, h3) must be wrapped in a `div` with `display: flex; justify-content: space-between; align-items: center`
+  - Each heading wrapper includes a TTS button (speaker icon) on the opposite side
+  - TTS uses the Web Speech API (`window.speechSynthesis`)
+  - On click: reads the heading text + all section content until the next heading
+  - Set utterance `lang` to match the LearningDNA language (e.g., `"he"` for Hebrew, `"en"` for English)
+  - Toggle state: playing shows stop icon, stopped shows play icon
+  - **TTS settings popup** (opened from a three-dots `⋮` button placed next to the TTS play buttons; clicking the button opens a popup menu with the settings, clicking outside or pressing Escape closes it):
+    - **Speed control:** slider from 0.5x to 2x (default 1x), maps to `utterance.rate`
+    - **Voice selection:** dropdown populated from `speechSynthesis.getVoices()`, filtered to voices matching the LearningDNA language. Prefer natural/premium voices when available (e.g., voices with "Natural", "Enhanced", or "Premium" in name)
+    - **Pitch control:** slider from 0.5 to 1.5 (default 1), maps to `utterance.pitch`
+    - Settings persist in `localStorage` under key `learningDNA-tts-settings`
+    - On first load, auto-select the best available voice for the language (prefer natural-sounding voices)
+  - Implementation approach: `useRef` + `useEffect` on the markdown container to post-process rendered headings and inject TTS buttons; a shared `useTTS` hook to manage voice settings, playback state, and localStorage persistence
+- **MarkdownContent component** must also implement the TTS heading behavior described above
 - Quiz page
-- Layout component
+- Layout component with **footer**:
+  - Footer text: "נבנה עם Learning DNA 🧬" (or equivalent in the user's LearningDNA language)
+  - The text must link to `https://github.com/avicorp/learning-dna-plugin`
+  - Link opens in new tab: `target="_blank" rel="noopener noreferrer"`
 - Routes configuration
 - TypeScript types
 - Progress tracking utilities

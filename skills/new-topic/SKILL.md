@@ -16,6 +16,8 @@ This is the main entry point. It runs the **full pipeline** end-to-end and finis
 
 ## Flow
 
+> **Self-driving pipeline:** This is an end-to-end pipeline. After each step completes, proceed immediately to the next. Do NOT pause between steps unless the step explicitly requires user input. Mandatory user interaction points: DNA questions (Step 1), per-topic override (Step 2), source approval (Step 5), quiz approval (Step 6). All other transitions are automatic.
+
 ### Step 1: DNA Gate (MANDATORY)
 1. Check if `knowledge/LearningDNA.md` exists
 2. If missing → **STOP. Do not proceed.** Run the DNA Creation Flow first:
@@ -60,19 +62,24 @@ Generate `overview.md` shaped by the merged LearningDNA:
 - The overview MUST list 3-5 subtopics to research — these drive Step 5
 
 ### Step 5: Research All Subtopics
-For each subtopic listed in the overview, run the full research flow:
+The **main agent** orchestrates all research — sub-agents only structure and write content.
 
-1. Use WebSearch to find 10-15 high-quality sources per subtopic
-2. Present all sources to the user and **wait for approval** — never auto-approve
-3. Use WebFetch on approved sources
-4. Write structured content to `knowledge/{topic}/sources/{subtopic}.md` shaped by DNA:
-   - **Content Depth**: Brief → bullet-points; Comprehensive → full theory + edge cases
-   - **Example Style**: Minimal → concepts only; Code-focused → code in every section; Real-world → production examples
-   - **Visualization**: Low → few diagrams; High → mermaid diagram for every major concept
-   - **Learner Type**: Kids → playful tone, analogies; Professional → industry terminology; etc.
-   - **Knowledge Level**: Beginner → define all terms; Expert → skip basics, focus on nuances
-   - **Language**: All content in the specified language
-   - Markdown structure: H1 title, H2 sections, H3 subsections, `---` separators, `## References` at end
+1. **Main agent searches:** Use WebSearch to find 10-15 high-quality sources per subtopic
+2. **User approval:** Present all sources to the user and **wait for approval** — never auto-approve
+3. **Main agent fetches:** Use WebFetch on all approved sources to retrieve their content
+4. **Dispatch sub-agents in parallel** — one per subtopic. Each sub-agent's prompt must include:
+   - The **fetched source content** (already approved and retrieved by main agent)
+   - The **merged LearningDNA settings** (global + per-topic override if exists)
+   - The **content structuring rules** (inline in the prompt):
+     - **Content Depth**: Brief → bullet-points; Comprehensive → full theory + edge cases
+     - **Example Style**: Minimal → concepts only; Code-focused → code in every section; Real-world → production examples
+     - **Visualization**: Low → few diagrams; High → mermaid diagram for every major concept
+     - **Learner Type**: Kids → playful tone, analogies; Professional → industry terminology; etc.
+     - **Knowledge Level**: Beginner → define all terms; Expert → skip basics, focus on nuances
+     - **Language**: All content in the specified language
+     - Markdown structure: H1 title, H2 sections, H3 subsections, `---` separators, `## References` at end
+   - The **output file path**: `knowledge/{topic}/sources/{subtopic}.md`
+   - **Important:** Sub-agents do NOT use WebSearch, WebFetch, or the Skill tool — they only structure the provided content and write the output file
 5. Update `overview.md` to link each completed subtopic
 
 After all subtopics are researched, dispatch the `topic-expander` agent to suggest additional subtopics. Ask the user if they want to research any of the suggestions. If yes, repeat this step for each additional subtopic.
