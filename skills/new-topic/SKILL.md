@@ -62,6 +62,15 @@ Generate `overview.md` shaped by the merged LearningDNA:
 - **Content depth: Comprehensive** → full introduction with context and background
 - The overview MUST list 3-5 subtopics to research — these drive Step 5
 
+### Step 4.5: Repo Detection
+If the topic argument contains a GitHub URL (`https://github.com/owner/repo`, `github.com/owner/repo`) or an `owner/repo` pattern, OR the user explicitly mentions a GitHub repository:
+1. Run `/learning-dna:inspect-repo` with the repo URL/identifier and the topic name
+2. The generated files (`repo-goals.md`, `recent-changes.md`, `pr-reviews.md`) become the first 3 subtopics in the knowledge base
+3. Update `overview.md` to include these as the first subtopics
+4. Proceed to Step 5 for any additional web research the user wants
+
+If the topic is not repo-related, skip this step entirely.
+
 ### Step 5: Research All Subtopics
 The **main agent** orchestrates all research — sub-agents only structure and write content.
 
