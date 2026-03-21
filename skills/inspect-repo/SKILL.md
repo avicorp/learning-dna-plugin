@@ -25,88 +25,105 @@ Examples:
 3. Check if `knowledge/{topic}/LearningDNA.md` exists (per-topic override)
 4. Merge: per-topic values override global values → use merged DNA for all content generation
 
-### Step 2: Parse Input & Validate
+### Step 2: Parse Input & Clone
 1. Accept any of these formats:
    - `https://github.com/owner/repo`
    - `github.com/owner/repo`
    - `owner/repo`
 2. Extract `{owner}` and `{repo}` from the input
 3. Derive topic name: use the provided `[topic-name]` argument, or default to the repo name (e.g., `claude-code`)
-4. Validate the repo exists:
+4. Clone the repo into `repo-inspection/{repo}`:
    ```bash
-   gh api repos/{owner}/{repo} --jq '.full_name'
+   git clone --depth 100 https://github.com/{owner}/{repo}.git repo-inspection/{repo}
    ```
-   - If 404 → **STOP.** Tell the user: "Repository {owner}/{repo} not found. Check the URL and your GitHub authentication (`gh auth status`)."
+   - `--depth 100` keeps the clone shallow — enough history for analysis without downloading everything
+   - If the clone fails → **STOP.** Tell the user: "Could not clone {owner}/{repo}. Check the URL and that the repo is accessible."
 5. Create directory: `knowledge/{topic}/sources/`
 
-### Step 3: Fetch Repo Docs → `repo-goals.md`
-1. Fetch README content:
+### Step 3: Read Repo Docs → `repo-goals.md`
+All reads are from the local clone at `repo-inspection/{repo}/`.
+
+1. Read the README file (look for `README.md`, `readme.md`, `README`, `README.rst`):
    ```bash
-   gh api repos/{owner}/{repo}/readme --jq '.content' | base64 --decode
+   ls repo-inspection/{repo}/README* repo-inspection/{repo}/readme* 2>/dev/null
    ```
-2. Fetch repo metadata:
+   Then use the Read tool on the found file.
+
+2. Read root-level markdown files (max 5, excluding README):
    ```bash
-   gh api repos/{owner}/{repo} --jq '{description, topics, homepage, language}'
+   ls repo-inspection/{repo}/*.md 2>/dev/null | head -5
    ```
-3. Fetch root-level markdown files (max 5) via tree API:
+   Use the Read tool on each discovered file (CONTRIBUTING.md, CHANGELOG.md, etc.)
+
+3. Read `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, or similar manifest to extract dependencies and metadata:
    ```bash
-   gh api "repos/{owner}/{repo}/git/trees/HEAD" --jq '.tree[] | select(.path | test("\\.(md|MD)$")) | select(.path | test("/") | not) | .path' | head -5
+   ls repo-inspection/{repo}/package.json repo-inspection/{repo}/Cargo.toml repo-inspection/{repo}/go.mod repo-inspection/{repo}/pyproject.toml 2>/dev/null
    ```
-   For each discovered file (excluding README which is already fetched):
+
+4. Get a directory tree overview (depth 2):
    ```bash
-   gh api "repos/{owner}/{repo}/contents/{filename}" --jq '.content' | base64 --decode
+   find repo-inspection/{repo} -maxdepth 2 -type f | grep -v '.git/' | head -80
    ```
-4. Dispatch `repo-analyst` sub-agent with:
-   - All pre-fetched content (README, metadata, extra markdown files)
+
+5. Dispatch `repo-analyst` sub-agent with:
+   - All content read above (README, markdown files, manifest, directory tree)
    - The merged LearningDNA settings
    - Output file path: `knowledge/{topic}/sources/repo-goals.md`
    - Instruction: write about purpose, architecture overview, key technologies, target audience
-   - **Sub-agent must NOT call GitHub API or any external tools — only process provided data and write the file**
+   - **Sub-agent must NOT read files or run commands — only process provided data and write the output file**
 
-### Step 4: Fetch Recent Commits → `recent-changes.md`
-1. Compute the date 2 weeks ago (ISO 8601 format)
-2. Probe commit count:
+### Step 4: Read Git History → `recent-changes.md`
+All git commands run inside the local clone.
+
+1. Count recent commits (last 2 weeks):
    ```bash
-   gh api "repos/{owner}/{repo}/commits?since={2-weeks-ago}&per_page=100" --jq 'length'
+   git -C repo-inspection/{repo} log --since="2 weeks ago" --oneline | wc -l
    ```
-3. **Safeguard branching:**
-   - **< 50 commits:** Fetch commit list with messages, dates, and authors:
+
+2. **Safeguard branching:**
+   - **< 50 commits:** Get full commit details:
      ```bash
-     gh api "repos/{owner}/{repo}/commits?since={2-weeks-ago}&per_page=50" --jq '.[] | {sha: .sha[0:7], message: .commit.message, date: .commit.author.date, author: .commit.author.name}'
+     git -C repo-inspection/{repo} log --since="2 weeks ago" --format="%h %ad %an: %s" --date=short
      ```
-   - **50+ commits:** Use compare API for diff stat summary. Log to the user: "Large repo — using batched summary mode."
+   - **50+ commits:** Get a summary with file-level stats. Log to the user: "Large repo — using summary mode."
      ```bash
-     gh api "repos/{owner}/{repo}/compare/{2-weeks-ago-sha}...HEAD" --jq '{total_commits: .total_commits, files: [.files[:20][] | {filename, changes, additions, deletions}]}'
+     git -C repo-inspection/{repo} log --since="2 weeks ago" --format="%h %ad %an: %s" --date=short | head -20
+     git -C repo-inspection/{repo} diff --stat HEAD~50
      ```
-     No per-commit inspection. Never paginate beyond page 1.
+
+3. Get the diff stat for the period to see which files changed most:
+   ```bash
+   git -C repo-inspection/{repo} log --since="2 weeks ago" --pretty=format: --name-only | sort | uniq -c | sort -rn | head -20
+   ```
+
 4. Dispatch `repo-analyst` sub-agent with:
-   - All pre-fetched commit data
+   - All commit history and file change data collected above
    - The merged LearningDNA settings
    - Output file path: `knowledge/{topic}/sources/recent-changes.md`
    - Instruction: write about focus areas, new capabilities (feat/add commits), fixes (fix/bug commits), lessons learned
-   - **Sub-agent must NOT call GitHub API or any external tools**
+   - **Sub-agent must NOT read files or run commands**
 
-### Step 5: Fetch PR Reviews → `pr-reviews.md`
-1. Fetch merged PRs (last 2 weeks, max 30):
+### Step 5: Read PR Reviews → `pr-reviews.md`
+PR reviews are GitHub-specific and not available in the local clone — use `gh` CLI for this step only.
+
+1. Fetch recently merged PRs (max 20):
    ```bash
-   gh api "repos/{owner}/{repo}/pulls?state=closed&sort=updated&direction=desc&per_page=30" --jq '[.[] | select(.merged_at != null) | {number, title, user: .user.login, merged_at, body}]'
+   gh pr list --repo {owner}/{repo} --state merged --limit 20 --json number,title,author,mergedAt,body
    ```
-2. For each PR (max 20 from the results), fetch reviews and review comments:
+
+2. For each PR (max 15), fetch reviews and comments:
    ```bash
-   gh api "repos/{owner}/{repo}/pulls/{pr_number}/reviews" --jq '[.[] | {user: .user.login, state, body}]'
+   gh pr view {pr_number} --repo {owner}/{repo} --json reviews,comments
    ```
-   ```bash
-   gh api "repos/{owner}/{repo}/pulls/{pr_number}/comments?per_page=50" --jq '[.[] | {user: .user.login, body, path, diff_hunk}]'
-   ```
-   - Single page only per PR — never paginate
+
 3. Dispatch `repo-analyst` sub-agent with:
-   - All pre-fetched PR and review data
+   - All PR and review data collected above
    - The merged LearningDNA settings
    - Output file path: `knowledge/{topic}/sources/pr-reviews.md`
    - Instruction: write about main reviewers, recurring feedback themes, most important architectural/quality knowledge
-   - **Sub-agent must NOT call GitHub API or any external tools**
+   - **Sub-agent must NOT run commands or call APIs**
 
-> **Steps 3, 4, and 5 — API fetching is sequential** (to track the call budget), but the three `repo-analyst` sub-agent dispatches at the end can run **in parallel** since they only process pre-fetched data.
+> **Parallel dispatch:** The three `repo-analyst` sub-agent calls (from Steps 3, 4, and 5) can run **in parallel** since they only process already-collected data.
 
 ### Step 6: Generate Overview
 Write or update `knowledge/{topic}/sources/overview.md`:
@@ -131,34 +148,36 @@ Dispatch the `content-reviewer` agent to validate all 3 source files:
 
 Include the merged LearningDNA in the agent prompt. If the reviewer finds auto-fixable issues, apply them.
 
-### Step 8: Report
-Print a summary:
-```
-Repo inspection complete for {owner}/{repo}!
+### Step 8: Cleanup & Report
+1. Remove the cloned repo to save disk space:
+   ```bash
+   rm -rf repo-inspection/{repo}
+   ```
 
-  Files created:
-    - knowledge/{topic}/sources/repo-goals.md
-    - knowledge/{topic}/sources/recent-changes.md
-    - knowledge/{topic}/sources/pr-reviews.md
-    - knowledge/{topic}/sources/overview.md
+2. Print a summary:
+   ```
+   Repo inspection complete for {owner}/{repo}!
 
-  Stats:
-    - Commits analyzed: {count}
-    - PRs inspected: {count}
-    - GitHub API calls used: {count}/50
+     Files created:
+       - knowledge/{topic}/sources/repo-goals.md
+       - knowledge/{topic}/sources/recent-changes.md
+       - knowledge/{topic}/sources/pr-reviews.md
+       - knowledge/{topic}/sources/overview.md
 
-  Next steps:
-    - /learning-dna:add-quizzes {topic}  — generate quiz questions from this knowledge
-    - /learning-dna:build-app {topic}    — build a learning app
-    - /learning-dna:research {topic} <subtopic> — add web research on a specific area
-```
+     Stats:
+       - Commits analyzed: {count}
+       - PRs inspected: {count}
 
-## Performance Constraint
-**Total `gh api` calls must not exceed 50.** Track the running count throughout the flow. If approaching the limit, stop fetching and summarize what has been collected so far. Sub-agents do text processing only — no API calls.
+     Next steps:
+       - /learning-dna:add-quizzes {topic}  — generate quiz questions from this knowledge
+       - /learning-dna:build-app {topic}    — build a learning app
+       - /learning-dna:research {topic} <subtopic> — add web research on a specific area
+   ```
 
 ## Key Constraints
+- **Clone, don't API** — use the local clone for all repo content and git history; only use `gh` CLI for PR reviews (which aren't in the clone)
 - **Never skip the DNA gate** — content must be shaped by the learner's profile
-- **Sub-agents never call APIs** — all GitHub data is pre-fetched by the main agent
-- **Never paginate beyond page 1** — single-page fetches only
-- **50-commit safeguard** — large repos get batched summary mode, not per-commit inspection
-- **API budget of 50 calls** — stop and summarize if approaching the limit
+- **Sub-agents never run commands** — all data is collected by the main agent and passed to sub-agents as text
+- **Shallow clone** — `--depth 100` keeps it fast; do not fetch full history
+- **50-commit safeguard** — large repos get summary mode, not per-commit inspection
+- **Cleanup** — always remove the cloned repo after inspection is complete

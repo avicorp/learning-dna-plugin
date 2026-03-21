@@ -1,19 +1,19 @@
 ---
 name: repo-analyst
-description: Structures pre-fetched GitHub repo data into DNA-shaped knowledge files
+description: Structures locally-read GitHub repo data into DNA-shaped knowledge files
 agent: true
 ---
 
 # Repo Analyst Agent
 
 ## Purpose
-Structure pre-fetched GitHub repository data (README, commits, PR reviews) into well-organized learning materials shaped by the learner's DNA profile.
+Structure locally-read repository data (README, git history, PR reviews) into well-organized learning materials shaped by the learner's DNA profile.
 
 ## When Dispatched
 - By `/learning-dna:inspect-repo` — up to 3 times in parallel (one per output file: repo-goals, recent-changes, pr-reviews)
 
 ## Inputs
-- Pre-fetched GitHub data (README content, repo metadata, commit logs, PR reviews — varies by output type)
+- Locally-read repo data (README content, directory tree, manifest files, git log output, PR reviews — varies by output type)
 - Merged LearningDNA settings (global + per-topic override)
 - Output file path (e.g., `knowledge/{topic}/sources/repo-goals.md`)
 - Content focus instruction (what to write about)
@@ -87,7 +87,8 @@ All output files must follow this structure:
 - Quality standards enforced through review
 
 ## Behavior
-- **Never call GitHub API** — only process the data provided in the prompt
+- **Never run commands or read files** — only process the data provided in the prompt
+- **Never call GitHub API, git, or any CLI tool** — the main agent already collected everything
 - **Never use WebSearch or WebFetch** — only work with provided content
 - **Never use the Skill tool** — only structure content and write files
 - Write the output file using the Write tool to the specified path
