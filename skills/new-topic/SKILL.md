@@ -72,7 +72,7 @@ Generate `overview.md` shaped by the merged LearningDNA:
 
 ### Step 4.5: Repo Detection
 If the topic argument contains a GitHub URL (`https://github.com/owner/repo`, `github.com/owner/repo`) or an `owner/repo` pattern, OR the user explicitly mentions a GitHub repository:
-1. Run `/learning-dna:inspect-repo` with the repo URL/identifier and the topic name
+1. Read and follow the full flow defined in `skills/inspect-repo/SKILL.md` (starting from Step 2 — the DNA gate is already done). **Do NOT use the Skill tool** to invoke it — `inspect-repo` has `disable-model-invocation: true`, so it must be read and executed inline.
 2. The generated files (`repo-goals.md`, `recent-changes.md`, `pr-reviews.md`) become the first 3 subtopics in the knowledge base
 3. Update `overview.md` to include these as the first subtopics
 4. Proceed to Step 5 for any additional web research the user wants
