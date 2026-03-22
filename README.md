@@ -8,7 +8,7 @@ A Claude Code plugin that turns any Claude Code project into a personalized lear
 2. **You pick a topic** — anything: Kubernetes, biology, music theory, cooking
 3. **Claude researches it** — finds sources, lets you approve them, then writes content shaped by your DNA
 4. **Claude generates quizzes** — difficulty and style matched to your profile
-5. **Claude builds a learning app** — a React web app with your content and quizzes, ready to deploy
+5. **Claude builds a learning app** — a React web app with your content, quizzes, text-to-speech reader, and progress tracking — ready to deploy
 
 No defaults. No one-size-fits-all. Your DNA drives every piece of generated content.
 
@@ -78,7 +78,24 @@ Generates quiz questions from your researched material — difficulty distributi
 /learning-dna:build-app
 ```
 
-Scaffolds a React 19 + TypeScript + Vite + Tailwind + Mermaid web app from your knowledge base.
+Scaffolds a React 19 + TypeScript + Vite + Tailwind + Mermaid web app from your knowledge base, with built-in text-to-speech reader and progress tracking.
+
+### Learning App Features
+
+The generated learning app includes:
+
+- **Text-to-Speech reader** — listen to any heading, paragraph, or entire page read aloud
+  - Per-paragraph read buttons (appear on hover) and section-level read buttons on headings
+  - "Read All" button to listen to the full page sequentially
+  - Speed presets ("Slow & Clear", "Normal", "Fast", "Speed Reader"), volume, voice selection, and pitch controls
+  - "Preview Voice" button to hear a sample before selecting a voice
+  - Sentence highlighting and progress bar during playback
+  - Auto-scroll to keep the currently-read text visible
+  - Keyboard shortcuts: Space (play/pause), Escape (stop), `[`/`]` (speed), N/P (navigate sections)
+  - DNA-driven defaults: speed and voice adapt to your learner type and language
+- **Side menu with progress tracking** — collapsible sidebar showing subtopic completion status, quiz scores, and overall progress
+- **Interactive quizzes** — with scoring, explanations, and difficulty breakdown
+- **Mermaid diagrams** — visual learning with auto-rendered diagrams
 
 ## How DNA Shapes Content
 
@@ -92,6 +109,9 @@ Scaffolds a React 19 + TypeScript + Vite + Tailwind + Mermaid web app from your 
 | `Visualization: High` | Mermaid diagram for every major concept |
 | `Testing: Heavy` | 10-20 questions per subtopic across all difficulties |
 | `Knowledge Level: Expert` | Skip basics, focus on nuances and edge cases |
+| `Learner Type: Kids` + TTS | Default read speed 0.85x, prefer child-friendly voices |
+| `Learner Type: Professional` + TTS | Default read speed 1.1x |
+| `Content Depth: Brief` + TTS | Auto-pause 1s between sections during "Read All" |
 
 ## Plugin Structure
 
