@@ -189,6 +189,9 @@ This step runs a verification loop. **The flow is NOT complete until the app is 
      App URL: http://localhost:{port}
 
      Open the URL in your browser to start learning.
+
+     Want to share it online? Deploy for free:
+     /learning-dna:deploy
    ```
 
 7. **If attempt fails → increment counter and loop back to step 1.**

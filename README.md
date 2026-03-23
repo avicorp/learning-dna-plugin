@@ -8,7 +8,8 @@ A Claude Code plugin that turns any Claude Code project into a personalized lear
 2. **You pick a topic** — anything: Kubernetes, biology, music theory, cooking
 3. **Claude researches it** — finds sources, lets you approve them, then writes content shaped by your DNA
 4. **Claude generates quizzes** — difficulty and style matched to your profile
-5. **Claude builds a learning app** — a React web app with your content, quizzes, text-to-speech reader, progress tracking, and a welcome page for switching between multiple topics — ready to deploy
+5. **Claude builds a learning app** — a React web app with your content, quizzes, text-to-speech reader, progress tracking, and a welcome page for switching between multiple topics
+6. **Claude deploys it** — guides you through deploying to GitHub Pages, Netlify, or Vercel for free
 
 No defaults. No one-size-fits-all. Your DNA drives every piece of generated content.
 
@@ -80,6 +81,28 @@ Generates quiz questions from your researched material — difficulty distributi
 
 Scaffolds a React 19 + TypeScript + Vite + Tailwind + Mermaid web app from your knowledge base, with built-in text-to-speech reader and progress tracking.
 
+### 5. Deploy your app
+
+```
+/learning-dna:deploy
+```
+
+Deploy your learning app to a free hosting service. Choose from three options:
+
+| Platform | URL Format | Best For |
+|----------|-----------|----------|
+| **GitHub Pages** | `https://<user>.github.io/<repo>/` | Projects already on GitHub |
+| **Netlify** | `https://<site>.netlify.app` | Easiest setup (drag-and-drop supported) |
+| **Vercel** | `https://<project>.vercel.app` | Fast global CDN |
+
+The deploy skill walks you through the entire process — platform selection, configuration, routing setup, and verification. You can also pass the platform directly:
+
+```
+/learning-dna:deploy github-pages
+/learning-dna:deploy netlify
+/learning-dna:deploy vercel
+```
+
 ### Learning App Features
 
 The generated learning app includes:
@@ -128,7 +151,8 @@ learning-dna-plugin/
 │   ├── new-topic/SKILL.md       # Create topics + DNA setup
 │   ├── research/SKILL.md        # Research subtopics from web
 │   ├── add-quizzes/SKILL.md     # Generate quizzes
-│   └── build-app/SKILL.md       # Build the learning app
+│   ├── build-app/SKILL.md       # Build the learning app
+│   └── deploy/SKILL.md          # Deploy to GitHub Pages, Netlify, or Vercel
 ├── agents/
 │   ├── app-validator.md         # Validates app structure and components
 │   ├── content-reviewer.md      # Validates content quality
