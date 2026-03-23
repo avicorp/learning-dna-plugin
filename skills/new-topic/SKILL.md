@@ -20,27 +20,35 @@ This is the main entry point. It runs the **full pipeline** end-to-end and finis
 
 ### Step 1: DNA Gate (MANDATORY)
 1. Check if `knowledge/LearningDNA.md` exists
-2. If missing → **STOP. Do not proceed.** Run the DNA Creation Flow first:
-   a. Inform the user: "Before we create any topic, you need to set up your Learning DNA — this is your personal learner profile that shapes all content generated for you. There are no defaults — your answers drive everything."
-   b. Present all 8 questions in a **single message** as a numbered list with multiple-choice options. **Do not split across multiple interactions. Do not skip any question. Do not use defaults. The user must answer each one:**
-      1. **Language:** English / Spanish / Hebrew / Chinese / Arabic / Other (specify)
-      2. **Learner Type:** Kids (6-12) / Youth (13-22) / Professional (23-60) / Lifelong (60+)
-      3. **Content Depth:** Brief / Standard / Detailed / Comprehensive
-      4. **Example Style:** Minimal / Code-focused / Real-world scenarios / Mixed
-      5. **Visualization:** Low / Medium / High
-      6. **Testing Frequency:** Light (3-5 per topic) / Standard (5-10) / Heavy (10-20)
-      7. **Knowledge Level:** Beginner / Some exposure / Working knowledge / Expert refresher
-      8. **Learning Goal:** Quick refresher / Practical skills / Deep understanding / Interview prep
-   c. Wait for the user to reply with all their answers in a single response
-   d. Parse the user's answers and write the results to `knowledge/LearningDNA.md`
+2. If missing → **STOP. Do not proceed.** Run the DNA Creation Flow using AskUserQuestion:
+
+   a. Inform the user: "Before we create any topic, you need to set up your Learning DNA — this is your personal learner profile that shapes all content generated for you."
+
+   b. **First AskUserQuestion call** — collect 4 answers at once:
+      | # | header | question | options |
+      |---|--------|----------|---------|
+      | 1 | Language | What language should your learning content be in? | English — "Content in English" / Spanish — "Contenido en español" / Hebrew — "תוכן בעברית" / Arabic — "المحتوى بالعربية" |
+      | 2 | Learner | Who is this for? | Kids (6-12) — "Simple language, fun analogies" / Youth (13-22) — "Engaging, school-oriented" / Professional (23-60) — "Industry terminology, career-focused" / Lifelong (60+) — "Curiosity-driven, clear structure" |
+      | 3 | Depth | How deep should the content go? | Brief — "Bullet-points, key takeaways only" / Standard — "Balanced explanation with examples" / Detailed — "Thorough coverage with extra context" / Comprehensive — "Full theory, edge cases, deep dives" |
+      | 4 | Examples | What kind of examples do you prefer? | Minimal — "Concepts only, few examples" / Code-focused — "Code samples in every section" / Real-world — "Practical, production scenarios" / Mixed — "Blend of code and real-world" |
+
+   c. **Second AskUserQuestion call** — collect remaining 4 answers:
+      | # | header | question | options |
+      |---|--------|----------|---------|
+      | 5 | Visuals | How many diagrams and visuals? | Low — "Diagrams only for complex topics" / Medium — "Diagrams for key concepts" / High — "Mermaid diagram for every major concept" |
+      | 6 | Testing | How many quiz questions per topic? | Light — "3-5 questions per subtopic" / Standard — "5-10 questions per subtopic" / Heavy — "10-20 questions per subtopic" |
+      | 7 | Level | What's your current knowledge level? | Beginner — "New to this, explain everything" / Some exposure — "Know the basics, build from there" / Working knowledge — "Skip basics, focus on application" / Expert refresher — "Advanced patterns and edge cases only" |
+      | 8 | Goal | What's your learning goal? | Quick refresher — "Key facts and reminders" / Practical skills — "Hands-on, scenario-based" / Deep understanding — "Truly understand the why and how" / Interview prep — "System-design style, explain while coding" |
+
+   d. Write all 8 answers to `knowledge/LearningDNA.md`
    e. Confirm: "Your Learning DNA is set!"
+
 3. If `knowledge/LearningDNA.md` exists → proceed to Step 2
 
 ### Step 2: Per-Topic DNA Override
-1. Ask the user: "Would you like to adjust your Learning DNA for {topic}? Your defaults are: [show current global values]"
-2. If yes: present all 8 questions in a **single message**, each showing the global default as the first option labeled "(Current default)". Wait for the user to reply with all answers at once.
-3. Parse the user's answers. If any differ from defaults: write `knowledge/{topic}/LearningDNA.md` with the full profile including changes
-4. If no changes: no per-topic file is created, global defaults apply
+1. Use AskUserQuestion to ask: question="Would you like to adjust your Learning DNA for {topic}?", header="Override", options: "Keep defaults — {show current global summary}" / "Customize — Adjust settings for this topic"
+2. If "Keep defaults" → no per-topic file is created, proceed to Step 3
+3. If "Customize" → run the same two AskUserQuestion calls from Step 1, but mark each current global value with "(Current default)" at the end of its label. Parse the answers and write `knowledge/{topic}/LearningDNA.md` with the full profile including any changes.
 
 ### Step 3: Create Directory Structure
 Create the following structure:
@@ -61,6 +69,15 @@ Generate `overview.md` shaped by the merged LearningDNA:
 - **Content depth: Brief** → bullet-point overview
 - **Content depth: Comprehensive** → full introduction with context and background
 - The overview MUST list 3-5 subtopics to research — these drive Step 5
+
+### Step 4.5: Repo Detection
+If the topic argument contains a GitHub URL (`https://github.com/owner/repo`, `github.com/owner/repo`) or an `owner/repo` pattern, OR the user explicitly mentions a GitHub repository:
+1. Read and follow the full flow defined in `skills/inspect-repo/SKILL.md` (starting from Step 2 — the DNA gate is already done). **Do NOT use the Skill tool** to invoke it — `inspect-repo` has `disable-model-invocation: true`, so it must be read and executed inline.
+2. The generated files (`repo-goals.md`, `recent-changes.md`, `pr-reviews.md`) become the first 3 subtopics in the knowledge base
+3. Update `overview.md` to include these as the first subtopics
+4. Proceed to Step 5 for any additional web research the user wants
+
+If the topic is not repo-related, skip this step entirely.
 
 ### Step 5: Research All Subtopics
 The **main agent** orchestrates all research — sub-agents only structure and write content.
