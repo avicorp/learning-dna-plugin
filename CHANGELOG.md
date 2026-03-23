@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-03-23
+
+### Added
+- Structure-first application setup — directory layout and TypeScript types created before any components
+- React Context data model (`LearningContext`) replacing all localStorage state management
+- IndexedDB data loader for persistent storage (topics, progress, quiz results, TTS settings)
+- Top navbar with "Topics" and "Quiz" navigation buttons (responsive hamburger on mobile)
+- Welcome/home page for multi-knowledge-base switching with topic cards showing progress
+- Quiz status page showing all topics' quiz progress, scores, and difficulty breakdown
+- `app-validator` agent for pre-build validation of structure, components, routing, and data model
+- Application validation step (Step 10) — build, component, routing, and data model checks before topic scaffolding
+- localStorage to IndexedDB migration on first load for v1.x generated apps
+
+### Changed
+- `build-app` skill restructured: 12-step flow (was 5 steps) with structure-first approach
+- TTS specifications extracted into reusable component section (`TTSReader` + `useTTS` hook)
+- Sidebar reads progress from React Context / IndexedDB instead of localStorage
+- TTS settings persistence moved from localStorage to IndexedDB `ttsSettings` object store
+- Footer text updated: "Built with Learning DNA" (linked to repo, no emoji)
+- `new-topic` skill Step 7 updated to follow full build-app flow including welcome page
+- `new-topic` skill Step 8 updated with welcome page verification
+- Plugin version bumped to 2.0.0
+
+### Breaking
+- Generated apps now use IndexedDB instead of localStorage for all persistence (migration included)
+- Application directory structure changed — new `components/`, `contexts/`, `hooks/`, `pages/`, `types/`, `lib/` directories under `src/`
+
 ## [1.1.0] - 2026-03-22
 
 ### Added
