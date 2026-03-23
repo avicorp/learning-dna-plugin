@@ -134,17 +134,12 @@ Generate quiz questions from all researched source material:
 7. Report: "Generated X questions: Y easy, Z medium, W hard"
 
 ### Step 7: Build the Learning App
-1. If `learning-app/` does not exist, scaffold a new project:
-   - React 19 + TypeScript + Vite 6 + Tailwind CSS 4 + Mermaid 11
-   - Base layout with navigation, routing, progress tracking
-   - Home page listing available topics
-2. Create a parse script in `learning-app/scripts/` to convert knowledge markdown → JSON
-3. Run the parse script to generate `learning-app/src/data/{topic}-topics.json` and `learning-app/src/data/{topic}-quizzes.json`
-4. Scaffold topic UI pages if they don't exist:
-   - Topic home page (subtopic list with progress)
-   - Topic detail page (rendered markdown + mermaid diagrams)
-   - Quiz page (interactive quiz with scoring and explanations)
-5. Run `cd learning-app && npm run build` to verify everything compiles
+Follow the full `build-app` skill specification (`skills/build-app/SKILL.md`), which uses a structure-first approach:
+1. If `learning-app/` does not exist, set up the application structure, data model (React Context), data loader (IndexedDB), layout (navbar + sidebar + footer), and TTS component **before** scaffolding any topic pages (Steps 2-6 of build-app)
+2. Parse content to JSON and scaffold topic UI pages (Steps 7-8 of build-app)
+3. Create or update the welcome/home page to list all topics including the new one (Step 9 of build-app)
+4. Run application validation to ensure the scaffolding is correct (Step 10 of build-app)
+5. Run `cd learning-app && npm run build` to verify everything compiles (Step 11 of build-app)
 
 ### Step 8: Serve and Verify (LOOP UNTIL SUCCESS)
 
@@ -177,6 +172,7 @@ This step runs a verification loop. **The flow is NOT complete until the app is 
    curl -s http://localhost:5173 | head -50
    ```
    - Confirm the HTML contains the app (look for the root div, script tags, app title)
+   - Verify the welcome page at `/` lists the topic (and all other existing topics if any)
    - If the page is blank or shows an error → diagnose, fix, rebuild, and restart this step
 
 5. **Verify topic data exists in the built app:**

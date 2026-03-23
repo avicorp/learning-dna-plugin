@@ -8,7 +8,7 @@ A Claude Code plugin that turns any Claude Code project into a personalized lear
 2. **You pick a topic** — anything: Kubernetes, biology, music theory, cooking
 3. **Claude researches it** — finds sources, lets you approve them, then writes content shaped by your DNA
 4. **Claude generates quizzes** — difficulty and style matched to your profile
-5. **Claude builds a learning app** — a React web app with your content, quizzes, text-to-speech reader, and progress tracking — ready to deploy
+5. **Claude builds a learning app** — a React web app with your content, quizzes, text-to-speech reader, progress tracking, and a welcome page for switching between multiple topics — ready to deploy
 
 No defaults. No one-size-fits-all. Your DNA drives every piece of generated content.
 
@@ -84,6 +84,9 @@ Scaffolds a React 19 + TypeScript + Vite + Tailwind + Mermaid web app from your 
 
 The generated learning app includes:
 
+- **Multi-topic welcome page** — a home page listing all your knowledge bases with progress cards, quiz status badges, and last visited dates
+- **Top navbar** — fixed navigation bar with "Topics" and "Quiz" buttons for quick access to the welcome page and quiz status overview
+- **Quiz status page** — full-page overview of quiz progress across all topics with scores, difficulty breakdowns, and retake buttons
 - **Text-to-Speech reader** — listen to any heading, paragraph, or entire page read aloud
   - Per-paragraph read buttons (appear on hover) and section-level read buttons on headings
   - "Read All" button to listen to the full page sequentially
@@ -94,6 +97,8 @@ The generated learning app includes:
   - Keyboard shortcuts: Space (play/pause), Escape (stop), `[`/`]` (speed), N/P (navigate sections)
   - DNA-driven defaults: speed and voice adapt to your learner type and language
 - **Side menu with progress tracking** — collapsible sidebar showing subtopic completion status, quiz scores, and overall progress
+- **IndexedDB persistence** — all progress, quiz results, and TTS settings stored in IndexedDB (replaces localStorage, with automatic migration for v1.x apps)
+- **Application validation** — automated checks for structure, components, routing, and data model integrity before building topic content
 - **Interactive quizzes** — with scoring, explanations, and difficulty breakdown
 - **Mermaid diagrams** — visual learning with auto-rendered diagrams
 
@@ -125,6 +130,7 @@ learning-dna-plugin/
 │   ├── add-quizzes/SKILL.md     # Generate quizzes
 │   └── build-app/SKILL.md       # Build the learning app
 ├── agents/
+│   ├── app-validator.md         # Validates app structure and components
 │   ├── content-reviewer.md      # Validates content quality
 │   ├── quiz-improver.md         # Improves quiz questions
 │   └── topic-expander.md        # Suggests subtopics
@@ -148,7 +154,20 @@ your-project/
 │       └── quizzes/
 │           └── quiz-bank.json
 └── learning-app/                        # Generated React app
+    ├── src/
+    │   ├── components/                  # TTSReader, Layout, Navbar, Sidebar, Footer
+    │   ├── contexts/                    # LearningContext (React Context provider)
+    │   ├── hooks/                       # useTTS, useIndexedDB, useProgress
+    │   ├── pages/                       # Welcome, TopicHome, TopicDetail, Quiz, QuizStatus
+    │   ├── data/                        # Generated JSON data files
+    │   ├── types/                       # TypeScript type definitions
+    │   └── lib/                         # IndexedDB loader utilities
+    └── scripts/                         # Parse scripts for knowledge → JSON
 ```
+
+### Migration from v1.x
+
+Apps generated with v1.x use localStorage for persistence. When a v1.x app is rebuilt with v2.0, the first load automatically migrates all data (progress, quiz results, TTS settings) from localStorage to IndexedDB and removes the old keys.
 
 ## Contributing
 
