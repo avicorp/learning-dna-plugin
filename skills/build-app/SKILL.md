@@ -93,6 +93,10 @@ interface QuizScore {
   - `getTopicProgress(topicSlug: string): TopicProgress`
 - Export a `useLearning` hook for components to consume the context
 
+#### Async-Safety Rules
+- All context mutation methods MUST guard against being called before IndexedDB data has loaded. Check `isLoaded` before allowing mutations to prevent overwriting persisted state with defaults.
+- Components that call context mutations on mount (e.g., `markSubtopicInProgress` in `useEffect`) MUST wait for `isLoaded === true` before calling. This prevents race conditions where the async IndexedDB load hasn't completed yet and mutations create fresh default objects that overwrite persisted data.
+
 ### Step 4: Data Loader — IndexedDB
 Create `src/lib/indexedDB.ts` — a utility module for persistent storage using IndexedDB.
 
@@ -145,7 +149,7 @@ Create the layout with three zones: top navbar, side navigation, and footer.
 - **Topic title** displayed at the top of the sidebar
 - **Subtopic list** — each subtopic rendered as a navigation link with:
   - **Status icon:** checkmark icon (completed), half-circle icon (in progress), empty circle icon (not started)
-  - **Completion tracking:** a subtopic is marked "completed" when the user scrolls to the bottom of its content page (use an `IntersectionObserver` on a sentinel `<div>` placed at the end of the content)
+  - **Completion tracking:** a subtopic is marked "completed" when the user scrolls to the bottom of its content page (use an `IntersectionObserver` on a sentinel `<div>` placed at the end of the content). **Dependency note:** The `IntersectionObserver` effect MUST include `isLoaded` in its dependency array when gated on context readiness, so the observer is created after data loads.
   - **Active highlight:** the current subtopic is highlighted with the app's accent color
 - **Quiz section** — link to the quiz page showing:
   - Score badge with best score (e.g., "8/10") or "Not attempted" if never taken
