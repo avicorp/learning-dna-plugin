@@ -1,7 +1,6 @@
 ---
 name: research
 description: Research and summarize a subtopic using web sources, shaped by LearningDNA
-disable-model-invocation: true
 argument-hint: <topic> <subtopic>
 ---
 
@@ -26,7 +25,7 @@ Example: `/learning-dna:research kubernetes networking`
 
 ### Step 3: Web Research
 
-> **GitHub Repo Shortcut:** If the subtopic argument is a GitHub URL (`https://github.com/owner/repo`, `github.com/owner/repo`) or an `owner/repo` pattern, read and follow the full flow in `skills/inspect-repo/SKILL.md` (starting from Step 2 — the DNA gate is already done) instead of performing web research. **Do NOT use the Skill tool** to invoke it — `inspect-repo` has `disable-model-invocation: true`, so it must be read and executed inline. Skip Steps 3-6 and proceed directly to Step 7.
+> **GitHub Repo Shortcut:** If the subtopic argument is a GitHub URL (`https://github.com/owner/repo`, `github.com/owner/repo`) or an `owner/repo` pattern, read and follow the full flow in `skills/inspect-repo/SKILL.md` (starting from Step 2 — the DNA gate is already done) instead of performing web research. Skip Steps 3-6 and proceed directly to Step 7.
 
 1. Use WebSearch to find 10-15 high-quality sources: official docs, engineering blogs, books, academic papers
 2. Present the sources to the user in a numbered list with title, URL, and brief description

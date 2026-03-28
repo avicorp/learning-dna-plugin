@@ -1,7 +1,6 @@
 ---
 name: add-quizzes
 description: Generate quiz questions from source material, shaped by LearningDNA
-disable-model-invocation: true
 argument-hint: <topic>
 ---
 

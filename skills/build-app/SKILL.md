@@ -1,7 +1,6 @@
 ---
 name: build-app
 description: Rebuild learning app data from knowledge/ content and scaffold UI if needed
-disable-model-invocation: true
 argument-hint: "[topic]"
 ---
 

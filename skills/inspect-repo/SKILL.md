@@ -1,7 +1,6 @@
 ---
 name: inspect-repo
 description: Inspect a GitHub repo and create a knowledge base from its README, recent commits, and PR reviews
-disable-model-invocation: true
 argument-hint: <github-repo-url-or-owner/repo> [topic-name]
 ---
 
