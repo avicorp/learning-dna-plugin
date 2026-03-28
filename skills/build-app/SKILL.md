@@ -304,3 +304,4 @@ Report what was built:
 - Whether the app structure was newly created (Step 2) or already existed
 - Application validation results (Step 10)
 - Build success/failure status
+- Deployment: Run `/learning-dna:deploy` to publish your app online for free
