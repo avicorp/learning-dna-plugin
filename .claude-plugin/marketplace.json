@@ -1,13 +1,21 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "learning-dna",
+  "description": "Create personalized learning apps on any topic for any age",
   "owner": {
-    "name": "Avi Levy",
-    "repository": "https://github.com/avicorp/learning-dna-plugin"
+    "name": "Avi Levy"
   },
   "plugins": [
     {
       "name": "learning-dna",
       "description": "Create personalized learning apps on any topic for any age",
-      "version": "2.1.0"
+      "version": "2.1.0",
+      "author": {
+        "name": "Avi Levy"
+      },
+      "source": ".",
+      "category": "education",
+      "keywords": ["learning", "education", "personalized", "apps"]
     }
   ]
 }
