@@ -1,0 +1,9 @@
+{
+  "name": "learning-dna",
+  "description": "Create personalized learning apps on any topic for any age",
+  "version": "2.1.0",
+  "author": {
+    "name": "Avi Levy"
+  },
+  "repository": "https://github.com/avicorp/learning-dna-plugin"
+}
