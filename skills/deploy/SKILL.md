@@ -1,7 +1,6 @@
 ---
 name: deploy
 description: Deploy your learning app to a free hosting service (GitHub Pages, Netlify, or Vercel)
-disable-model-invocation: true
 argument-hint: "[github-pages|netlify|vercel]"
 ---
 
