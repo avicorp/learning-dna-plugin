@@ -15,11 +15,9 @@ No defaults. No one-size-fits-all. Your DNA drives every piece of generated cont
 
 ## Demo
 
-**Interview Prep** — [learning-app-five-blond.vercel.app](https://learning-app-five-blond.vercel.app/)
-Topics, quizzes, and progress tracking for professional software engineers preparing for interviews.
+[**Interview Prep**](https://learning-app-five-blond.vercel.app/) — Topics, quizzes, and progress tracking for professional software engineers preparing for interviews.
 
-**Repo-Based Learning** — [learning-app-olive-two.vercel.app](https://learning-app-olive-two.vercel.app/) | [repo](https://github.com/avicorp/repo-inspection)
-Courses on the [Claude Code](https://github.com/anthropics/claude-code) repo and [OWASP Top 10:2025](https://owasp.org/www-project-top-ten/), built from repo inspection with structured topics and interactive quizzes.
+[**Repo-Based Learning**](https://learning-app-olive-two.vercel.app/) ([repo](https://github.com/avicorp/repo-inspection)) — Courses on the Claude Code repo and OWASP Top 10:2025, built from repo inspection with structured topics and interactive quizzes.
 
 ## Requirements
 
