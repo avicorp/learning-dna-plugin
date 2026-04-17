@@ -29,7 +29,7 @@ No defaults. No one-size-fits-all. Your DNA drives every piece of generated cont
 
 ```bash
 # Add the marketplace (once)
-/plugin marketplace add avilevy/learning-dna-plugin
+/plugin marketplace add avicorp/learning-dna-plugin
 
 # Install the plugin
 /plugin install learning-dna
@@ -38,7 +38,7 @@ No defaults. No one-size-fits-all. Your DNA drives every piece of generated cont
 ### Local development
 
 ```bash
-git clone https://github.com/avilevy/learning-dna-plugin.git
+git clone https://github.com/avicorp/learning-dna-plugin.git
 claude --plugin-dir ./learning-dna-plugin
 ```
 
@@ -109,6 +109,14 @@ The deploy skill walks you through the entire process — platform selection, co
 /learning-dna:deploy vercel
 ```
 
+### Bonus: Learn from a GitHub repo
+
+```
+/learning-dna:inspect-repo anthropics/claude-code
+```
+
+Builds a knowledge base from a repo's README, recent commits, and PR reviews — shaped by your DNA. Accepts `owner/repo` or a full GitHub URL, with an optional topic name.
+
 ### Learning App Features
 
 The generated learning app includes:
@@ -152,20 +160,21 @@ The generated learning app includes:
 ```
 learning-dna-plugin/
 ├── .claude-plugin/
-│   └── plugin.json              # Plugin manifest
+│   ├── plugin.json              # Plugin manifest
+│   └── marketplace.json         # Marketplace entry
 ├── skills/
 │   ├── new-topic/SKILL.md       # Create topics + DNA setup
 │   ├── research/SKILL.md        # Research subtopics from web
 │   ├── add-quizzes/SKILL.md     # Generate quizzes
 │   ├── build-app/SKILL.md       # Build the learning app
-│   └── deploy/SKILL.md          # Deploy to GitHub Pages, Netlify, or Vercel
-├── agents/
-│   ├── app-validator.md         # Validates app structure and components
-│   ├── content-reviewer.md      # Validates content quality
-│   ├── quiz-improver.md         # Improves quiz questions
-│   └── topic-expander.md        # Suggests subtopics
-└── hooks/
-    └── hooks.json               # Pre-commit quality checks
+│   ├── deploy/SKILL.md          # Deploy to GitHub Pages, Netlify, or Vercel
+│   └── inspect-repo/SKILL.md    # Build a knowledge base from a GitHub repo
+└── agents/
+    ├── app-validator.md         # Validates app structure and components
+    ├── content-reviewer.md      # Validates content quality
+    ├── quiz-improver.md         # Improves quiz questions
+    ├── repo-analyst.md          # Structures repo data into DNA-shaped content
+    └── topic-expander.md        # Suggests subtopics
 ```
 
 ## What Gets Created in Your Project
